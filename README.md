@@ -1,11 +1,12 @@
-# Gen_Evol_VFA_1
+# Parte 1
 
 ### Este script automatiza el proceso de descarga de archivos SRA, su conversión a archivos FASTQ, la compresión de estos, y la generación de informes de control de calidad usando FastQC.
 
 A continuacion el propósito de cada línea de tu script paso a paso:
 
+```
 1. **`mkdir fastqc_reports`**:
-   - Crea un directorio llamado `fastqc_reports` donde se guardarán los reportes generados por la herramienta **FastQC**.
+   # Crea un directorio llamado `fastqc_reports` donde se guardarán los reportes generados por la herramienta **FastQC**.
 
 2. **`mkdir sra_files`**:
    - Crea un directorio llamado `sra_files` para almacenar los archivos **SRA** (Sequence Read Archive) descargados.
@@ -34,5 +35,4 @@ A continuacion el propósito de cada línea de tu script paso a paso:
 10. **`ls -lh`**:
     - Muestra el contenido del directorio actual en formato de lista (`ls -l`) y de una manera legible para humanos (`-h`), mostrando el tamaño de los archivos de forma más comprensible (por ejemplo, en KB, MB, GB).
 
-
-## 
+```
