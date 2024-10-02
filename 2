@@ -1,0 +1,37 @@
+Aquí te explico cada línea de este nuevo script paso a paso:
+
+### Instalación de programas con **conda**:
+1. **`conda env -n GenEvol`**:
+   - Crea un nuevo ambiente de conda llamado **GenEvol**. Sin embargo, falta el comando para activarlo o crearlo completamente, ya que normalmente se usaría `conda create -n GenEvol` para crear el ambiente o `conda activate GenEvol` para activarlo.
+
+2. **`conda install bioconda::fastqc`**:
+   - Instala la herramienta **FastQC** desde el canal **bioconda**, que es un canal especializado en herramientas bioinformáticas. Esto permitirá el control de calidad de las lecturas de secuencias.
+
+3. **`conda install bioconda::trimmomatic`**:
+   - Instala la herramienta **Trimmomatic**, también desde **bioconda**. **Trimmomatic** se utiliza para limpiar y recortar las lecturas de secuencias, eliminando regiones de baja calidad o adaptadores.
+
+### Limpieza de las lecturas (**clean reads**):
+4. **`trimmomatic PE -threads 2 ERR12389866_1.fastq.gz ERR12389866_2.fastq.gz ERR12389866_1_paired.fq.gz ERR12389866_1_unpaired.fq.gz ERR12389866_2_paired.fq.gz ERR12389866_2_unpaired.fq.gz SLIDINGWINDOW:4:20 MINLEN:50`**:
+   - Ejecuta **Trimmomatic** en modo **PE** (paired-end) para limpiar las lecturas emparejadas:
+     - **`ERR12389866_1.fastq.gz`**: Archivo con las primeras lecturas de las secuencias emparejadas.
+     - **`ERR12389866_2.fastq.gz`**: Archivo con las segundas lecturas de las secuencias emparejadas.
+     - **`ERR12389866_1_paired.fq.gz`**: Salida de lecturas emparejadas limpias para el primer archivo.
+     - **`ERR12389866_1_unpaired.fq.gz`**: Salida de lecturas no emparejadas para el primer archivo.
+     - **`ERR12389866_2_paired.fq.gz`**: Salida de lecturas emparejadas limpias para el segundo archivo.
+     - **`ERR12389866_2_unpaired.fq.gz`**: Salida de lecturas no emparejadas para el segundo archivo.
+     - **`SLIDINGWINDOW:4:20`**: Recorta la lectura cuando la media de calidad en una ventana de 4 bases es inferior a 20.
+     - **`MINLEN:50`**: Descartar lecturas que tengan una longitud inferior a 50 bases después del recorte.
+
+### Control de calidad:
+5. **`fastqc -t 2 *_paired.fq.gz`**:
+   - Ejecuta **FastQC** para verificar la calidad de las lecturas emparejadas limpias. El parámetro `-t 2` utiliza dos hilos para procesar más rápidamente.
+
+### Ensamblaje con **SPAdes**:
+6. **`spades --pe1-1 ERR12389866_1_paired.fq.gz --pe1-2 ERR12389866_2_paired.fq.gz -t 2 -o ERR12389866_2_spades`**:
+   - Ejecuta el programa de ensamblaje **SPAdes** para ensamblar el genoma a partir de las lecturas emparejadas limpias:
+     - **`--pe1-1 ERR12389866_1_paired.fq.gz`**: Archivo de lecturas emparejadas limpias (primer par).
+     - **`--pe1-2 ERR12389866_2_paired.fq.gz`**: Archivo de lecturas emparejadas limpias (segundo par).
+     - **`-t 2`**: Utiliza dos hilos para realizar el ensamblaje.
+     - **`-o ERR12389866_2_spades`**: Define el directorio de salida donde se guardarán los resultados del ensamblaje.
+
+Este script descarga e instala las herramientas necesarias para procesar y limpiar lecturas de secuenciación, verifica la calidad de las lecturas procesadas y, finalmente, realiza el ensamblaje del genoma utilizando **SPAdes**.
