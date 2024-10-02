@@ -126,7 +126,7 @@ En esta línea se agregan nuevos parámetros adicionales:
 
 Los otros parámetros (como **`--kingdom Viruses`**, **`--cpus 2`**, **`--prefix ERR12389866_prokka`**, **`--locustag ERR12389866_prokka`**, y **`scaffolds.fasta`**) son los mismos que en las líneas anteriores.
 
-# Parte 5
+# Parte 4
 
 ### Este script automatiza el proceso de descargar datos de NCBI, realizar el mapeo de las secuencias al genoma de referencia, generar archivos BAM, extraer el genoma consenso y anotar los resultados.
 
