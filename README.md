@@ -132,7 +132,7 @@ Los otros parámetros (como **`--kingdom Viruses`**, **`--cpus 2`**, **`--prefix
 
 A continuacion el propósito de cada línea del script paso a paso:
 
-### #0# Descargar datos de NCBI:
+### 0 Descargar datos de NCBI:
 ```bash
 prefetch --max-size 50G --option-file accessions_mpox.txt
 ```
