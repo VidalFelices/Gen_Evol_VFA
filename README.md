@@ -87,3 +87,41 @@ A continuacion el propósito de cada línea del script paso a paso:
      -o ERR12389866_2_spades: Define el directorio de salida donde se guardarán los resultados del ensamblaje.
 
 ```
+# Parte 3
+
+### Este script ejecuta "Prokka" tres veces con ligeras variaciones para anotar el genoma de un virus. Se especifica el uso de 2 nucleos de CPU, se define un prefijo para los archivos de salida y una etiqueta de locus para las anotaciones. Además, en una de las ejecuciones, se usa una referencia de proteínas para mejorar la anotación, y en otra, se agregan anotaciones adicionales y se forza la sobrescritura de archivos.
+
+Aquí cada paso del script relacionado con la anotación de genes usando **Prokka**.
+
+### Línea 1: 
+```bash
+prokka --kingdom Viruses --cpus 2 --prefix ERR12389866_prokka --locustag ERR12389866_prokka scaffolds.fasta
+```
+- **`prokka`**: Ejecuta el programa **Prokka**, que se utiliza para la anotación rápida de genomas.
+- **`--kingdom Viruses`**: Especifica que el genoma a anotar pertenece al reino de **virus**. Esto ayuda a Prokka a ajustar los parámetros de anotación para genomas virales.
+- **`--cpus 2`**: Utiliza 2 núcleos de CPU para acelerar el proceso de anotación.
+- **`--prefix ERR12389866_prokka`**: Especifica el prefijo de los archivos de salida. En este caso, todos los archivos generados tendrán el prefijo `ERR12389866_prokka`.
+- **`--locustag ERR12389866_prokka`**: Asigna una etiqueta a los loci anotados (en este caso, `ERR12389866_prokka` será el identificador de los genes).
+- **`scaffolds.fasta`**: Es el archivo **FASTA** que contiene las secuencias de andamios (scaffolds) o contigs que se van a anotar.
+
+### Línea 2:
+```bash
+prokka --kingdom Viruses --cpus 2 --proteins reference.gb --prefix ERR12389866_prokka --locustag ERR12389866_prokka scaffolds.fasta
+```
+Esta línea es muy similar a la anterior, pero tiene un parámetro adicional:
+
+- **`--proteins reference.gb`**: Indica a Prokka que utilice el archivo **reference.gb** como una referencia de proteínas para la anotación. Este archivo, que debe estar en formato GenBank, contiene proteínas previamente anotadas, que Prokka usará como referencia para mejorar la precisión de la anotación.
+- Los demás parámetros son los mismos:
+  - **`--kingdom Viruses`**, **`--cpus 2`**, **`--prefix ERR12389866_prokka`**, **`--locustag ERR12389866_prokka`**, y **`scaffolds.fasta`** tienen los mismos significados que en la primera línea.
+
+### Línea 3:
+```bash
+prokka --kingdom Viruses --cpus 2 --prefix ERR12389866_prokka --locustag ERR12389866_prokka scaffolds.fasta -o ERR12389866_ann --addgenes --force
+```
+En esta línea se agregan nuevos parámetros adicionales:
+
+- **`-o ERR12389866_ann`**: Define la carpeta de salida para los resultados de la anotación. Aquí, los archivos resultantes se guardarán en el directorio **ERR12389866_ann**.
+- **`--addgenes`**: Indica a Prokka que agregue anotaciones de genes en las características anotadas. Esto asegura que cada CDS (secuencia de codificación de proteínas) tenga un gen anotado correspondiente.
+- **`--force`**: Sobrescribe cualquier archivo existente en el directorio de salida sin solicitar confirmación.
+
+Los otros parámetros (como **`--kingdom Viruses`**, **`--cpus 2`**, **`--prefix ERR12389866_prokka`**, **`--locustag ERR12389866_prokka`**, y **`scaffolds.fasta`**) son los mismos que en las líneas anteriores.
