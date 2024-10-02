@@ -125,3 +125,170 @@ En esta línea se agregan nuevos parámetros adicionales:
 - **`--force`**: Sobrescribe cualquier archivo existente en el directorio de salida sin solicitar confirmación.
 
 Los otros parámetros (como **`--kingdom Viruses`**, **`--cpus 2`**, **`--prefix ERR12389866_prokka`**, **`--locustag ERR12389866_prokka`**, y **`scaffolds.fasta`**) son los mismos que en las líneas anteriores.
+
+# Parte 5
+
+### Este script automatiza el proceso de descargar datos de NCBI, realizar el mapeo de las secuencias al genoma de referencia, generar archivos BAM, extraer el genoma consenso y anotar los resultados.
+
+A continuacion el propósito de cada línea del script paso a paso:
+
+### #0# Descargar datos de NCBI:
+```bash
+prefetch --max-size 50G --option-file accessions_mpox.txt
+```
+- **`prefetch`**: Comando para descargar archivos desde NCBI SRA.
+- **`--max-size 50G`**: Limita el tamaño máximo de descarga a 50 GB.
+- **`--option-file accessions_mpox.txt`**: Especifica un archivo de texto con los números de acceso SRA que se van a descargar, en este caso para un estudio relacionado con la viruela del mono (mpox).
+
+```bash
+mv */*.sra .
+```
+- Mueve todos los archivos **SRA** descargados de los subdirectorios a la carpeta actual.
+
+```bash
+fasterq-dump --split-files *.sra
+```
+- Convierte los archivos **SRA** a archivos **FASTQ** utilizando **fasterq-dump** y divide los archivos en lecturas **paired-end** (_1.fastq y _2.fastq).
+
+```bash
+gzip *fastq
+```
+- Comprime los archivos **FASTQ** generados en formato **gzip** para ahorrar espacio.
+
+```bash
+fastqc *
+```
+- Ejecuta **FastQC** en todos los archivos **FASTQ** para evaluar la calidad de las lecturas.
+
+---
+
+### 1 Indexar el genoma de referencia:
+```bash
+bwa index reference.fasta
+```
+- **`bwa index`**: Indexa el archivo **FASTA** del genoma de referencia, lo que permite una búsqueda rápida de secuencias durante la alineación.
+- **`reference.fasta`**: Archivo FASTA que contiene el genoma de referencia al cual se alinearán las lecturas.
+
+---
+
+### 2 Preparar las instrucciones generales:
+```bash
+for r1 in *fastq.gz
+do
+prefix=$(basename $r1 _1.fastq.gz)
+r2=${prefix}_2.fastq.gz
+```
+- Este bucle **for** recorre todos los archivos **FASTQ.gz**.
+- **`basename $r1 _1.fastq.gz`**: Extrae el prefijo del archivo de lectura **paired-end** (quita `_1.fastq.gz` para obtener el nombre base del archivo).
+- **`r2=${prefix}_2.fastq.gz`**: Define la segunda lectura emparejada.
+
+---
+
+### 3 Instrucciones para generar el archivo .bam:
+```bash
+bwa mem -t 4 reference.fasta $r1 $r2 > ${prefix}_uno.sam
+```
+- **`bwa mem`**: Alinea las lecturas de **FASTQ** al genoma de referencia utilizando el algoritmo **BWA-MEM**.
+- **`-t 4`**: Utiliza 4 núcleos de CPU para acelerar el proceso.
+- **`reference.fasta`**: El genoma de referencia.
+- **`$r1 $r2`**: Las dos lecturas emparejadas.
+- El resultado de la alineación se guarda en un archivo **SAM** llamado `${prefix}_uno.sam`.
+
+```bash
+samtools view -@ 4 -bS -T reference.fasta ${prefix}_uno.sam > ${prefix}_unoa.bam
+```
+- Convierte el archivo **SAM** a **BAM** utilizando **samtools view**. El archivo BAM es un formato comprimido más eficiente.
+- **`-@ 4`**: Usa 4 núcleos.
+- **`-bS`**: Convierte de **SAM** a **BAM**.
+- El archivo de salida es `${prefix}_unoa.bam`.
+
+```bash
+samtools sort -@ 4 -n ${prefix}_unoa.bam -o ${prefix}_dosa.bam
+```
+- Ordena el archivo BAM por nombre de lectura, y lo guarda como `${prefix}_dosa.bam`.
+
+```bash
+samtools fixmate -@ 4 -m ${prefix}_dosa.bam ${prefix}_tresa.bam
+```
+- **`fixmate`** ajusta las lecturas emparejadas en el archivo BAM para que tengan la información correcta.
+
+```bash
+samtools sort -@ 4 ${prefix}_tresa.bam -o ${prefix}_cuatroa.bam
+```
+- Vuelve a ordenar el archivo BAM, esta vez por posición genómica, y lo guarda como `${prefix}_cuatroa.bam`.
+
+```bash
+samtools markdup -@ 4 ${prefix}_cuatroa.bam ${prefix}.bam
+```
+- **`markdup`** marca las lecturas duplicadas en el archivo BAM para poder filtrarlas posteriormente.
+
+```bash
+samtools index -@ 4 ${prefix}.bam
+```
+- Indexa el archivo **BAM** final `${prefix}.bam` para permitir accesos rápidos a las posiciones.
+
+```bash
+rm ${prefix}_uno.sam ${prefix}_unoa.bam ${prefix}_dosa.bam ${prefix}_tresa.bam ${prefix}_cuatroa.bam
+```
+- Borra los archivos intermedios para ahorrar espacio.
+
+---
+
+### 4 Extraer genomas consenso:
+```bash
+for r1 in *bam
+do
+prefix=$(basename $r1 .bam)
+```
+- Bucle **for** que recorre todos los archivos **BAM**.
+
+```bash
+samtools mpileup -aa -A -d 0 -Q 0 $r1 | ivar consensus -p ${prefix}.fasta -q 25 -t 0.6 -m 10
+```
+- **`samtools mpileup`** genera un archivo de alineación base por base (mpileup) del archivo BAM.
+  - **`-aa`**: Incluye todas las bases.
+  - **`-A`**: No ignora las lecturas secundarias.
+  - **`-d 0`**: Sin límite en la profundidad de cobertura.
+  - **`-Q 0`**: No filtra por calidad de las lecturas.
+- **`ivar consensus`**: Genera un genoma consenso basado en la alineación:
+  - **`-p ${prefix}.fasta`**: Define el nombre de salida del genoma consenso.
+  - **`-q 25`**: Usa lecturas con calidad mayor a 25.
+  - **`-t 0.6`**: Para llamar una base, al menos el 60% de las lecturas deben estar de acuerdo.
+  - **`-m 10`**: Mínimo de 10 lecturas de cobertura para llamar una base.
+
+---
+
+### 5 Anotación del genoma:
+```bash
+mkdir -p annotation
+mkdir -p ffn
+```
+- Crea directorios para guardar las anotaciones (**annotation**) y archivos **FFN** (**ffn**).
+
+```bash
+for r1 in *fa
+do
+prefix=$(basename $r1 .fa)
+prokka --cpus 4 $r1 -o ${prefix} --prefix ${prefix} --kingdom Viruses
+mv ${prefix}/*.gff annotation/${prefix}.gff
+done
+```
+- Bucle **for** que anota cada archivo de genoma en formato **FASTA** (`*.fa`).
+- **`prokka`** realiza la anotación:
+  - **`--cpus 4`**: Usa 4 hilos de CPU.
+  - **`--kingdom Viruses`**: Define el reino como virus.
+  - **`-o ${prefix}`**: Define el directorio de salida.
+  - **`--prefix ${prefix}`**: Prefijo para los archivos de salida.
+- Después de la anotación, mueve el archivo GFF generado a la carpeta **annotation**.
+
+```bash
+cp */*.ffn ffn/
+```
+- Copia los archivos **FFN** (archivos de secuencias de genes anotados en formato FASTA) al directorio **ffn**.
+
+```bash
+ls
+```
+- Lista los archivos en el directorio actual para verificar que todo se haya ejecutado correctamente.
+
+---
