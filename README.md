@@ -1,4 +1,4 @@
-# Gen_Evol_VFA
+# Gen_Evol_VFA_1
 
 ### Este script automatiza el proceso de descarga de archivos SRA, su conversión a archivos FASTQ, la compresión de estos, y la generación de informes de control de calidad usando FastQC.
 
