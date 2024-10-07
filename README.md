@@ -304,9 +304,9 @@ A continuacion el propósito de cada línea del script paso a paso:
 ```bash
 conda activate art
 art
-Abrir menu file >> open file manager >> cargar el archivo del genoma en formato fasta: *fa
+Abrir menu file "open file manager" y cargar el archivo del genoma en formato fasta: *fa
 luego de cargar el genoma realizar:
-Abrir menu file >> read and entry >> cargar el archivo en formato gff: *gff
+Abrir menu file "read and entry" y cargar el archivo en formato gff: *gff
 Click derecho en el listado de descripcion de los fragmentos en parte inferior y marcar:
 - Show Gene NAmes
 - Show Products
