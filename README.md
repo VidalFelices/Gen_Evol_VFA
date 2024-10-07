@@ -312,7 +312,7 @@ Click derecho en el listado de descripcion de los fragmentos en parte inferior y
 - Show Products
 Revisar otras caracteristicas
 ```
-- **conda activate art**: Activa el entorno de `conda` llamado `art`, que contiene la herramienta `ARTEMIS` para la visualización y anotación de genomas.
+- **conda activate art**: Activa el entorno de `conda` llamado `art`, que contiene la herramienta `ARTEMIS` para la visualización y analisis de genomas.
 - **art**: Inicia el programa `ARTEMIS`.
 - **open file manager\*.fa**: En el menú del programa, selecciona "Archivo" y luego "Abrir el administrador de archivos" para cargar el archivo del genoma en formato FASTA (`.fa`).
 - **read and entry \*.gff**: En el menú del programa, selecciona "Archivo" y luego "Leer y entrada" para cargar el archivo de anotación GFF, que contiene información sobre las regiones genómicas anotadas, como genes y CDS (códigos para proteínas).
