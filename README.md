@@ -323,3 +323,6 @@ Revisar otras caracteristicas
 - **read and entry \*.gff**: En el menú del programa, selecciona "Archivo" y luego "Leer y entrada" para cargar el archivo de anotación GFF, que contiene información sobre las regiones genómicas anotadas, como genes y CDS (códigos para proteínas).
 - **Show Gene Names**: Para visualizar los nombres de los genes identificados.
 - **Show Products**: Para mostrar los productos génicos (como proteínas).
+
+![Descripción de la imagen](ruta/imagen.png)
+
