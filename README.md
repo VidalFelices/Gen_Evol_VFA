@@ -324,5 +324,4 @@ Revisar otras caracteristicas
 - **Show Gene Names**: Para visualizar los nombres de los genes identificados.
 - **Show Products**: Para mostrar los productos génicos (como proteínas).
 
-![Descripción de la imagen](ruta/imagen.png)
-
+![Descripción de la imagen](https://github.com/Vidal-Felices/Gen_Evol_VFA/raw/main/Captura%20de%20pantalla%20de%202024-10-07%2010-43-15.png)
