@@ -292,3 +292,29 @@ ls
 - Lista los archivos en el directorio actual para verificar que todo se haya ejecutado correctamente.
 
 ---
+
+
+# Parte 5
+
+### Mediante el programa Artemis, vamos a identificar las regiones que Prokka ha anotado como CDS (regiones que codifican proteínas). Al explorar estas anotaciones, se puede observar si alguna de las regiones aparece como "hypothetical", lo que podria indicar que no se ha identificado una función conocida para esa región o gen.
+
+A continuacion el propósito de cada línea del script paso a paso:
+
+### Abrir el terminal y usar Artemis:
+```bash
+conda activate art
+art
+Abrir menu file >> open file manager >> cargar el archivo del genoma en formato fasta: *fa
+luego de cargar el genoma realizar:
+Abrir menu file >> read and entry >> cargar el archivo en formato gff: *gff
+Click derecho en el listado de descripcion de los fragmentos en parte inferior y marcar:
+- Show Gene NAmes
+- Show Products
+Revisar otras caracteristicas
+```
+- **conda activate art**: Activa el entorno de `conda` llamado `art`, que contiene la herramienta `ARTEMIS` para la visualización y anotación de genomas.
+- **art**: Inicia el programa `ARTEMIS`.
+- **open file manager\*.fa**: En el menú del programa, selecciona "Archivo" y luego "Abrir el administrador de archivos" para cargar el archivo del genoma en formato FASTA (`.fa`).
+- **read and entry \*.gff**: En el menú del programa, selecciona "Archivo" y luego "Leer y entrada" para cargar el archivo de anotación GFF, que contiene información sobre las regiones genómicas anotadas, como genes y CDS (códigos para proteínas).
+- **Show Gene Names**: Para visualizar los nombres de los genes identificados.
+- **Show Products**: Para mostrar los productos génicos (como proteínas).
