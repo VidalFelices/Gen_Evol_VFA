@@ -325,3 +325,39 @@ Revisar otras caracteristicas
 - **Show Products**: Para mostrar los productos génicos (como proteínas).
 
 ![Descripción de la imagen](https://github.com/Vidal-Felices/Gen_Evol_VFA/raw/main/Captura%20de%20pantalla%20de%202024-10-07%2010-43-15.png)
+
+---
+
+### PARTE 6
+## BAJAR SECUENCIAS CON DATASETS
+
+
+#!/bin/bash
+
+#Especificar el archivo de accesiones directamente
+genome="FILE.txt"
+
+#Descargar los genomas y procesarlos
+for file in $(cat $genome)
+do 
+    datasets download genome accession ${file} --filename ${file}.zip ;
+    unzip ${file}.zip -d ${file}/ ;
+    rm ${file}.zip ;
+    cp ${file}/*/*/*/*.fna .
+    rm -r ${file}/ ;
+done
+
+#Renombrar los archivos .fna a .fasta con el formato adecuado
+for file in *.fna
+do
+    mv "$file" "$(echo "$file" | sed -e 's/.1_.*/.1.fasta/g')"
+    mv "$file" "$(echo "$file" | sed -e 's/.2_.*/.2.fasta/g')"
+    mv "$file" "$(echo "$file" | sed -e 's/.3_.*/.3.fasta/g')"
+done 
+
+#Mostrar el listado de archivos resultantes
+ls
+
+
+
+
