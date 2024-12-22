@@ -358,6 +358,19 @@ done
 #Mostrar el listado de archivos resultantes
 ls
 
+---
+### ANOTACION CON PROKKA DE ARCHIVOS *.fasta
 
+mkdir -p annotation/  # Crea el directorio "annotation" si no existe
 
+for r1 in *.fasta  # Procesa todos los archivos que terminan en ".fasta"
+do
+    prefix=$(basename "$r1" .fasta)  # Extrae el nombre base del archivo (sin la extensión ".fasta")
+
+    # Ejecuta Prokka para anotación
+    prokka --cpus 4 "$r1" -o "${prefix}" --prefix "${prefix}" --kingdom Viruses 
+
+    # Mueve el archivo GFF generado a la carpeta "annotation" y lo renombra con el prefijo
+    mv "${prefix}/*.gff" "annotation/${prefix}.gff"
+done
 
