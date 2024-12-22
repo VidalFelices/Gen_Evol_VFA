@@ -374,3 +374,44 @@ do
     mv "${prefix}/*.gff" "annotation/${prefix}.gff"
 done
 
+
+---
+### BUSCAR CDS, tRNA, rRNA, PSEUDOGENES, Y PROTEINAS HIPOTETICAS EN UN FOLDER ANOTADO EN PROKKA
+
+#!/bin/bash
+
+for dir in GCA_*/; do
+    echo "Buscando en el directorio: $dir"
+
+    # Buscar archivo .gff
+    gff_file=$(find "$dir" -name "*.gff" | head -n 1)
+    tbl_file=$(find "$dir" -name "*.tbl" | head -n 1)
+
+    if [ -n "$gff_file" ]; then
+        echo "Archivo encontrado: ${gff_file}"
+        cds_count=$(grep -P "\tCDS\t" "$gff_file" | wc -l)
+        trna_count=$(grep -P "\ttRNA\t" "$gff_file" | wc -l)
+        rrna_count=$(grep -P "\trRNA\t" "$gff_file" | wc -l)
+        pseudo_count=$(grep -P "\tpseudo\t" "$gff_file" | wc -l)
+        hypothetical_count_gff=$(grep -i "hypothetical protein" "$gff_file" | wc -l)
+
+        echo "Archivo GFF: $(basename "$gff_file")"
+        echo "CDS anotados: $cds_count"
+        echo "tRNA anotados: $trna_count"
+        echo "rRNA anotados: $rrna_count"
+        echo "Pseudo genes anotados: $pseudo_count"
+        echo "Proteínas hipotéticas anotadas en GFF: $hypothetical_count_gff"
+    else
+        echo "No se encontró archivo .gff en el directorio $dir"
+    fi
+
+    if [ -n "$tbl_file" ]; then
+        hypothetical_count_tbl=$(grep -i "hypothetical protein" "$tbl_file" | wc -l)
+        echo "Proteínas hipotéticas anotadas en TBL: $hypothetical_count_tbl"
+    else
+        echo "No se encontró archivo .tbl en el directorio $dir"
+    fi
+
+    echo "--------------------------------------"
+done
+
