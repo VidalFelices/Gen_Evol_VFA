@@ -436,35 +436,35 @@ head filtered_blast.csv
 
 #!/bin/bash
 
-# Ruta al archivo VFDB
+#Ruta al archivo VFDB
 VFDB="VFDB_setB_pro.fas"
 
-# Crear la base de datos de proteínas (asegúrate de hacerlo solo una vez)
+#Crear la base de datos de proteínas (asegúrate de hacerlo solo una vez)
 makeblastdb -in "$VFDB" -dbtype prot -out VFDB_setB_pro
 
-# Directorio donde se encuentran los archivos FASTA
+#Directorio donde se encuentran los archivos FASTA
 INPUT_DIR="."
 OUTPUT_DIR="results"
 
-# Crear directorio de resultados
+#Crear directorio de resultados
 mkdir -p "$OUTPUT_DIR"
 
-# Iterar sobre cada archivo FASTA en el directorio
+#Iterar sobre cada archivo FASTA en el directorio
 for fasta in "$INPUT_DIR"/*.fasta; do
-  # Obtener el nombre base del archivo
+  #Obtener el nombre base del archivo
   base_name=$(basename "$fasta" .fasta)
   
-  # Crear un subdirectorio para los resultados de este archivo
+  #Crear un subdirectorio para los resultados de este archivo
   subdir="$OUTPUT_DIR/$base_name"
   mkdir -p "$subdir"
   
-  # Ejecutar blastx
+  #Ejecutar blastx
   blastx -db VFDB_setB_pro -query "$fasta" -outfmt 6 -num_threads 8 > "$subdir/blast.csv"
   
-  # Filtrar resultados con identidad >= 90% y E-value <= 1e-10
+  #Filtrar resultados con identidad >= 90% y E-value <= 1e-10
   awk '$3 >= 90 && $11 <= 1e-10' "$subdir/blast.csv" > "$subdir/filtered_blast.csv"
   
-  # Agregar encabezados a la tabla y formatear con tabuladores
+  #Agregar encabezados a la tabla y formatear con tabuladores
   sed '1i query.acc.ver subject.acc.ver perc.identity alignment.length mismatches gap.opens q.start q.end s.start s.end evalue bit.score' "$subdir/filtered_blast.csv" | tr " " "\t" > "$subdir/filtered_blast_with_headers.csv"
   
   echo "Procesado: $fasta -> Resultados en $subdir"
