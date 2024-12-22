@@ -420,16 +420,16 @@ done
 ---
 ### HACER BLAST (una base de datos en nucleótidos y una consulta en proteínas),  usar blastx
 
-# Crear la base de datos de proteínas
+#Crear la base de datos de proteínas
 makeblastdb -in VFDB_setB_pro.fas -dbtype prot -out VFDB_setB_pro
 
-# Ejecutar blastx para buscar similitudes entre la consulta de nucleótidos y la base de datos de proteínas
+#Ejecutar blastx para buscar similitudes entre la consulta de nucleótidos y la base de datos de proteínas
 blastx -db VFDB_setB_pro -query GCA_000008725.1.fasta -outfmt 6 -num_threads 8 > blast.csv
 
-# Filtrar resultados para un porcentaje de identidad >= 90%
+#Filtrar resultados para un porcentaje de identidad >= 90%
 awk '$3 >= 90' blast.csv > filtered_blast.csv
 
-# Ver los resultados
+#Ver los resultados
 head filtered_blast.csv
 
 ### LO MISMO DEL ANTERIOR PERO FILTRANDO POR E-VALUE YAGREGANDO ENCABEZADOS A LA LISTA
